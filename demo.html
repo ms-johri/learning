@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Portal Demo</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+                'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+                sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        p {
+            color: #666;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        input:disabled {
+            background-color: #f5f5f5;
+            cursor: not-allowed;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.3s, transform 0.1s;
+        }
+
+        button:hover:not(:disabled) {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            background-color: #fee;
+            border: 1px solid #fcc;
+            border-radius: 5px;
+            padding: 12px;
+            color: #c33;
+            margin-bottom: 20px;
+        }
+
+        .error-message ul {
+            margin-left: 20px;
+        }
+
+        .password-requirements {
+            background-color: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .password-requirements h4 {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .password-requirements ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .password-requirements li {
+            color: #999;
+            font-size: 13px;
+            padding: 4px 0;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .password-requirements li::before {
+            content: '✗';
+            position: absolute;
+            left: 0;
+            color: #c33;
+            font-weight: bold;
+        }
+
+        .password-requirements li.valid {
+            color: #4caf50;
+        }
+
+        .password-requirements li.valid::before {
+            content: '✓';
+            color: #4caf50;
+        }
+
+        .info-box {
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+            color: #1976d2;
+            font-size: 14px;
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .dashboard {
+            text-align: center;
+        }
+
+        .dashboard h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .dashboard strong {
+            color: #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // Password validation utilities
+        const validatePassword = (password) => {
+            const errors = [];
+            
+            if (!password || password.length < 8) {
+                errors.push('Password must be at least 8 characters long');
+            }
+            
+            if (!/[A-Z]/.test(password)) {
+                errors.push('Password must contain at least one uppercase letter');
+            }
+            
+            if (!/[a-z]/.test(password)) {
+                errors.push('Password must contain at least one lowercase letter');
+            }
+            
+            if (!/[0-9]/.test(password)) {
+                errors.push('Password must contain at least one number');
+            }
+            
+            if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+                errors.push('Password must contain at least one special character');
+            }
+            
+            return {
+                isValid: errors.length === 0,
+                errors,
+            };
+        };
+
+        const passwordsMatch = (password, confirmPassword) => {
+            return password === confirmPassword;
+        };
+
+        // Login Component
+        const Login = ({ onLogin, onFirstTimeLogin }) => {
+            const [username, setUsername] = useState('');
+            const [password, setPassword] = useState('');
+            const [error, setError] = useState('');
+            const [loading, setLoading] = useState(false);
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setError('');
+
+                if (!username || !password) {
+                    setError('Please enter both username and password');
+                    return;
+                }
+
+                setLoading(true);
+
+                setTimeout(() => {
+                    if (password === 'FirstTime@123') {
+                        onFirstTimeLogin(username);
+                    } else {
+                        onLogin(username, password);
+                    }
+                    setLoading(false);
+                }, 500);
+            };
+
+            return (
+                <div className="container">
+                    <form onSubmit={handleSubmit}>
+                        <h2>Login</h2>
+                        
+                        <div className="info-box">
+                            <strong>Demo Credentials:</strong>
+                            <div>Regular login: any username + any password except FirstTime@123</div>
+                            <div>First-time login: any username + FirstTime@123</div>
+                        </div>
+
+                        {error && (
+                            <div className="error-message" role="alert">
+                                {error}
+                            </div>
+                        )}
+
+                        <div className="form-group">
+                            <label htmlFor="username">Username</label>
+                            <input
+                                type="text"
+                                id="username"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                placeholder="Enter your username"
+                                disabled={loading}
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="password">Password</label>
+                            <input
+                                type="password"
+                                id="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Enter your password"
+                                disabled={loading}
+                            />
+                        </div>
+
+                        <button type="submit" disabled={loading}>
+                            {loading ? 'Logging in...' : 'Login'}
+                        </button>
+                    </form>
+                </div>
+            );
+        };
+
+        // FirstTimeLogin Component
+        const FirstTimeLogin = ({ username, onPasswordSet }) => {
+            const [newPassword, setNewPassword] = useState('');
+            const [confirmPassword, setConfirmPassword] = useState('');
+            const [errors, setErrors] = useState([]);
+            const [loading, setLoading] = useState(false);
+            const [showPasswordRequirements, setShowPasswordRequirements] = useState(false);
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                setErrors([]);
+
+                const validation = validatePassword(newPassword);
+
+                if (!validation.isValid) {
+                    setErrors(validation.errors);
+                    return;
+                }
+
+                if (!passwordsMatch(newPassword, confirmPassword)) {
+                    setErrors(['Passwords do not match']);
+                    return;
+                }
+
+                setLoading(true);
+                setTimeout(() => {
+                    onPasswordSet(username, newPassword);
+                    setLoading(false);
+                }, 500);
+            };
+
+            return (
+                <div className="container">
+                    <form onSubmit={handleSubmit}>
+                        <h2>Set Your Password</h2>
+                        <p>Welcome, {username}! Please set a secure password for your account.</p>
+
+                        {errors.length > 0 && (
+                            <div className="error-message" role="alert">
+                                <ul>
+                                    {errors.map((error, index) => (
+                                        <li key={index}>{error}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
+                        <div className="form-group">
+                            <label htmlFor="new-password">New Password</label>
+                            <input
+                                type="password"
+                                id="new-password"
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                                onFocus={() => setShowPasswordRequirements(true)}
+                                placeholder="Enter your new password"
+                                disabled={loading}
+                            />
+                        </div>
+
+                        {showPasswordRequirements && (
+                            <div className="password-requirements">
+                                <h4>Password Requirements:</h4>
+                                <ul>
+                                    <li className={newPassword.length >= 8 ? 'valid' : ''}>
+                                        At least 8 characters long
+                                    </li>
+                                    <li className={/[A-Z]/.test(newPassword) ? 'valid' : ''}>
+                                        Contains at least one uppercase letter
+                                    </li>
+                                    <li className={/[a-z]/.test(newPassword) ? 'valid' : ''}>
+                                        Contains at least one lowercase letter
+                                    </li>
+                                    <li className={/[0-9]/.test(newPassword) ? 'valid' : ''}>
+                                        Contains at least one number
+                                    </li>
+                                    <li className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword) ? 'valid' : ''}>
+                                        Contains at least one special character
+                                    </li>
+                                </ul>
+                            </div>
+                        )}
+
+                        <div className="form-group">
+                            <label htmlFor="confirm-password">Confirm Password</label>
+                            <input
+                                type="password"
+                                id="confirm-password"
+                                value={confirmPassword}
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                placeholder="Confirm your new password"
+                                disabled={loading}
+                            />
+                        </div>
+
+                        <button type="submit" disabled={loading}>
+                            {loading ? 'Setting Password...' : 'Set Password'}
+                        </button>
+                    </form>
+                </div>
+            );
+        };
+
+        // App Component
+        const App = () => {
+            const [isAuthenticated, setIsAuthenticated] = useState(false);
+            const [isFirstTimeLogin, setIsFirstTimeLogin] = useState(false);
+            const [currentUser, setCurrentUser] = useState(null);
+
+            const handleLogin = (username, password) => {
+                console.log('Login successful:', username);
+                setCurrentUser(username);
+                setIsAuthenticated(true);
+            };
+
+            const handleFirstTimeLogin = (username) => {
+                console.log('First-time login detected:', username);
+                setCurrentUser(username);
+                setIsFirstTimeLogin(true);
+            };
+
+            const handlePasswordSet = (username, newPassword) => {
+                console.log('Password set successfully for:', username);
+                setIsAuthenticated(true);
+                setIsFirstTimeLogin(false);
+            };
+
+            const handleLogout = () => {
+                setIsAuthenticated(false);
+                setIsFirstTimeLogin(false);
+                setCurrentUser(null);
+            };
+
+            if (isAuthenticated) {
+                return (
+                    <div className="container dashboard">
+                        <h1>Welcome to the Portal</h1>
+                        <p>You are logged in as: <strong>{currentUser}</strong></p>
+                        <button onClick={handleLogout}>Logout</button>
+                    </div>
+                );
+            }
+
+            if (isFirstTimeLogin) {
+                return (
+                    <FirstTimeLogin
+                        username={currentUser}
+                        onPasswordSet={handlePasswordSet}
+                    />
+                );
+            }
+
+            return (
+                <Login
+                    onLogin={handleLogin}
+                    onFirstTimeLogin={handleFirstTimeLogin}
+                />
+            );
+        };
+
+        // Render the app
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

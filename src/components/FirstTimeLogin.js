@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { validatePassword, passwordsMatch } from '../utils/passwordValidation';
+import { validatePassword, passwordsMatch, getPasswordRequirements } from '../utils/passwordValidation';
+import { SIMULATED_API_DELAY, PASSWORD_MIN_LENGTH } from '../utils/constants';
 
 /**
  * FirstTimeLogin Component
@@ -32,7 +33,7 @@ const FirstTimeLogin = ({ username, onPasswordSet }) => {
 
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
       onPasswordSet(username, newPassword);
     } catch (err) {
       setErrors(['Failed to set password. Please try again.']);
@@ -72,22 +73,22 @@ const FirstTimeLogin = ({ username, onPasswordSet }) => {
         </div>
 
         {showPasswordRequirements && (
-          <div className="password-requirements">
+          <div className="password-requirements" aria-live="polite">
             <h4>Password Requirements:</h4>
             <ul>
-              <li className={newPassword.length >= 8 ? 'valid' : ''}>
-                At least 8 characters long
+              <li className={getPasswordRequirements(newPassword).hasMinLength ? 'valid' : ''}>
+                At least {PASSWORD_MIN_LENGTH} characters long
               </li>
-              <li className={/[A-Z]/.test(newPassword) ? 'valid' : ''}>
+              <li className={getPasswordRequirements(newPassword).hasUppercase ? 'valid' : ''}>
                 Contains at least one uppercase letter
               </li>
-              <li className={/[a-z]/.test(newPassword) ? 'valid' : ''}>
+              <li className={getPasswordRequirements(newPassword).hasLowercase ? 'valid' : ''}>
                 Contains at least one lowercase letter
               </li>
-              <li className={/[0-9]/.test(newPassword) ? 'valid' : ''}>
+              <li className={getPasswordRequirements(newPassword).hasNumber ? 'valid' : ''}>
                 Contains at least one number
               </li>
-              <li className={/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(newPassword) ? 'valid' : ''}>
+              <li className={getPasswordRequirements(newPassword).hasSpecialChar ? 'valid' : ''}>
                 Contains at least one special character
               </li>
             </ul>

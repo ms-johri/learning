@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SIMULATED_API_DELAY, FIRST_TIME_LOGIN_PASSWORD } from '../utils/constants';
 
 /**
  * Login Component
@@ -23,10 +24,11 @@ const Login = ({ onLogin, onFirstTimeLogin }) => {
 
     try {
       // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, SIMULATED_API_DELAY));
 
-      // Check if this is a first-time login (password === 'FirstTime@123')
-      if (password === 'FirstTime@123') {
+      // Check if this is a first-time login
+      // NOTE: In production, first-time login should be determined by backend API response
+      if (password === FIRST_TIME_LOGIN_PASSWORD) {
         onFirstTimeLogin(username);
       } else {
         onLogin(username, password);

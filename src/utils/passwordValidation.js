@@ -1,3 +1,5 @@
+import { PASSWORD_REGEX, PASSWORD_MIN_LENGTH } from './constants';
+
 /**
  * Validates password strength based on security requirements
  * @param {string} password - The password to validate
@@ -6,23 +8,23 @@
 export const validatePassword = (password) => {
   const errors = [];
   
-  if (!password || password.length < 8) {
-    errors.push('Password must be at least 8 characters long');
+  if (!password || password.length < PASSWORD_MIN_LENGTH) {
+    errors.push(`Password must be at least ${PASSWORD_MIN_LENGTH} characters long`);
   }
   
-  if (!/[A-Z]/.test(password)) {
+  if (!PASSWORD_REGEX.UPPERCASE.test(password)) {
     errors.push('Password must contain at least one uppercase letter');
   }
   
-  if (!/[a-z]/.test(password)) {
+  if (!PASSWORD_REGEX.LOWERCASE.test(password)) {
     errors.push('Password must contain at least one lowercase letter');
   }
   
-  if (!/[0-9]/.test(password)) {
+  if (!PASSWORD_REGEX.NUMBER.test(password)) {
     errors.push('Password must contain at least one number');
   }
   
-  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+  if (!PASSWORD_REGEX.SPECIAL_CHAR.test(password)) {
     errors.push('Password must contain at least one special character');
   }
   
@@ -40,4 +42,19 @@ export const validatePassword = (password) => {
  */
 export const passwordsMatch = (password, confirmPassword) => {
   return password === confirmPassword;
+};
+
+/**
+ * Returns individual password requirement checks
+ * @param {string} password - The password to check
+ * @returns {object} - Object with boolean values for each requirement
+ */
+export const getPasswordRequirements = (password) => {
+  return {
+    hasMinLength: password.length >= PASSWORD_MIN_LENGTH,
+    hasUppercase: PASSWORD_REGEX.UPPERCASE.test(password),
+    hasLowercase: PASSWORD_REGEX.LOWERCASE.test(password),
+    hasNumber: PASSWORD_REGEX.NUMBER.test(password),
+    hasSpecialChar: PASSWORD_REGEX.SPECIAL_CHAR.test(password),
+  };
 };
