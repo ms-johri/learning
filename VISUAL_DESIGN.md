@@ -2,6 +2,25 @@
 
 ## Login Portal Visual Design
 
+### Logo Design
+
+**Security Shield Logo:**
+- SVG-based vector graphic
+- Shield shape with lock icon
+- Gradient fill matching brand colors (#667eea → #764ba2)
+- White lock with subtle gradient for depth
+- Size: 80x80 pixels (configurable)
+- Fade-in scale animation (0.6s ease-out)
+- Accessibility: aria-label="Security Logo"
+
+**Logo Features:**
+- Professional security-themed design
+- Represents trust and protection
+- Consistent brand colors
+- Smooth entrance animation
+- Scalable vector format
+- Optimized for all screen sizes
+
 ### Design System
 
 **Color Palette:**
@@ -45,6 +64,7 @@
 │          PURPLE GRADIENT BACKGROUND          │
 │                                              │
 │    ┌──────────────────────────────────┐    │
+│    │       🛡️ [Security Logo]         │    │
 │    │  ╔══════════════════════════════╗ │    │
 │    │  ║         Login               ║ │    │
 │    │  ╚══════════════════════════════╝ │    │
@@ -70,6 +90,7 @@
 ```
 
 **Features:**
+- Animated security shield logo with lock icon
 - Centered white card on gradient background
 - Clear input labels
 - Full-width button with gradient
@@ -85,6 +106,7 @@
 │          PURPLE GRADIENT BACKGROUND          │
 │                                              │
 │    ┌──────────────────────────────────┐    │
+│    │       🛡️ [Security Logo]         │    │
 │    │  ╔══════════════════════════════╗ │    │
 │    │  ║   Set Your Password         ║ │    │
 │    │  ╚══════════════════════════════╝ │    │

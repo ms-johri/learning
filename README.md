@@ -13,6 +13,7 @@ This project provides a complete login system for a React-based portal with:
 ## Features
 
 ### 1. Login Page
+- Professional security shield logo with animation
 - Username and password authentication
 - Form validation
 - Loading states during authentication
