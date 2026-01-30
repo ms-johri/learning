@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { validatePassword, passwordsMatch, getPasswordRequirements } from '../utils/passwordValidation';
 import { SIMULATED_API_DELAY, PASSWORD_MIN_LENGTH } from '../utils/constants';
+import Logo from './Logo';
 
 /**
  * FirstTimeLogin Component
@@ -45,6 +46,9 @@ const FirstTimeLogin = ({ username, onPasswordSet }) => {
   return (
     <div className="first-time-login-container">
       <form onSubmit={handleSubmit} className="first-time-login-form">
+        <div className="logo-container">
+          <Logo size={80} />
+        </div>
         <h2>Set Your Password</h2>
         <p>Welcome, {username}! Please set a secure password for your account.</p>
 

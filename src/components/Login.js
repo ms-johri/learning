@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { SIMULATED_API_DELAY, FIRST_TIME_LOGIN_PASSWORD } from '../utils/constants';
+import Logo from './Logo';
 
 /**
  * Login Component
@@ -43,6 +44,9 @@ const Login = ({ onLogin, onFirstTimeLogin }) => {
   return (
     <div className="login-container">
       <form onSubmit={handleSubmit} className="login-form">
+        <div className="logo-container">
+          <Logo size={80} />
+        </div>
         <h2>Login</h2>
         
         {error && (
